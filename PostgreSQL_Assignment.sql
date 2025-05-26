@@ -8,7 +8,7 @@ SELECT COUNT(DISTINCT species_id) AS unique_species_count
 FROM sightings;
 
 --Problem 3
-SELECT *
+SELECT sighting_id, species_id, ranger_id, location, sighting_time, notes
 FROM sightings
 WHERE location ILIKE '%Pass%';
 
@@ -17,14 +17,13 @@ SELECT r.name, COUNT(s.sighting_id) AS total_sightings
 FROM rangers r
 INNER JOIN sightings s ON r.ranger_id = s.ranger_id
 GROUP BY r.ranger_id, r.name
-ORDER BY r.name;
+ORDER BY r.name ASC;
 
 --Problem 5 
-SELECT common_name
-FROM species
-WHERE species_id NOT IN (
-  SELECT DISTINCT species_id FROM sightings
-);
+SELECT s.common_name
+FROM species s
+LEFT JOIN sightings si ON s.species_id = si.species_id
+WHERE si.species_id IS NULL;
 
 --Problem 6
 SELECT sp.common_name, si.sighting_time, r.name
@@ -37,7 +36,7 @@ LIMIT 2;
 --Problem 7
 UPDATE species
 SET conservation_status = 'Historic'
-WHERE discovery_date < '1800-01-01';
+WHERE EXTRACT(YEAR FROM discovery_date) < 1800;
 
 --Problem 8
 SELECT sighting_id,
